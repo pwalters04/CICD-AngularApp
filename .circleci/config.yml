@@ -44,7 +44,7 @@ jobs:
             docker image build -t mydevreg.azurecr.io/hero-cicd:2.0 .
       - run:
           command: |
-            docker login --username $DOCKER_USER --passsword-stdin $DOCKER_PASS mydevreg.azurecr.io
+            docker login -u $DOCKER_USER -p $DOCKER_PASS mydevreg.azurecr.io
       - run:
           command: |
             docker push mydevreg.azurecr.io/hero-cicd:2.0
