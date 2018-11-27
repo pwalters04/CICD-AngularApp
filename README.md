@@ -4,7 +4,7 @@ This project was generated with the following:
 
  - [Angular CLI](https://github.com/angular/angular-cli) version 7.0.6
  - [DockerFile] nginx:alpine
- - [CirleCI] Congig.yml
+ - [CirleCI] Config.yml
       - Build
       - Unit Test
       - Build Docker Image
@@ -12,7 +12,7 @@ This project was generated with the following:
 
 # Automate Run
   The following steps:
-  
+
     - Save Changes
     - Commit Changes 
 
