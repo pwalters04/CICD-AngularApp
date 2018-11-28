@@ -32,11 +32,24 @@ jobs:
       - save_cache:
           paths:
             - node_modules
+            -  Terraform/node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
       # run tests!
       - run: yarn ng build --prod
       - run: yarn ng test --watch=false
+
+      # Terraform Build VM
+      - run:
+          command: |
+            terraform init
+      - run:
+          command: |
+            terraform plan
+      - run:
+          command: |
+            terraform apply
+
 
     # Docker Image Build
       - run:
