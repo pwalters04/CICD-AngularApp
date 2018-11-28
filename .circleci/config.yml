@@ -4,65 +4,64 @@
 #
 version: 2
 jobs:
-  build:
+   validate_terraform:
     docker:
-      # specify the version you desire here
-      - image: circleci/node:8-browsers
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
-    working_directory: ~/repo
-
+      - image: circleci/terraform
     steps:
       - checkout
-      - setup_remote-docker
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      - run: yarn install
-
-      - save_cache:
-          paths:
-            - node_modules
-            -  Terraform/node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-
-      # run tests!
-      - run: yarn ng build --prod
-      - run: yarn ng test --watch=false
-
-      # Terraform Build VM
-
       - run:
-          command: |
-            terraform init
-      - run:
-          command: |
-            terraform plan
-      - run:
+          name: Validate Terraform Formatting
+          command: "[ -z \"$(terraform fmt -write=false)\" ] || { terraform fmt -write=false -diff; exit 1; }"
 
-          command: |
-            terraform apply
+    build:
+      docker:
+        # specify the version you desire here
+        - image: circleci/node:8-browsers
+        - image: circleci/terraform
+        # Specify service dependencies here if necessary
+        # CircleCI maintains a library of pre-built images
+        # documented at https://circleci.com/docs/2.0/circleci-images/
+        # - image: circleci/mongo:3.4.4
 
+      working_directory: ~/repo
 
-    # Docker Image Build
-      - run:
-          command: |
-            docker image build -t mydevreg.azurecr.io/hero-cicd:2.0 .
-      - run:
-          command: |
-            docker login -u $DOCKER_USER -p $DOCKER_PASS mydevreg.azurecr.io
-      - run:
-          command: |
-            docker push mydevreg.azurecr.io/hero-cicd:2.0
+      steps:
+        - checkout
+        - setup_remote-docker
+
+        # Download and cache dependencies
+        - restore_cache:
+            keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+        - run: yarn install
+
+        - save_cache:
+            paths:
+              - node_modules
+              -  Terraform/node_modules
+            key: v1-dependencies-{{ checksum "package.json" }}
+
+        # run tests!
+        - run: yarn ng build --prod
+        - run: yarn ng test --watch=false
+
+        - run:
+          name: Initialize Terraform
+          command: terraform init
+
+      # Docker Image Build
+        - run:
+            command: |
+              docker image build -t mydevreg.azurecr.io/hero-cicd:2.0 .
+        - run:
+            command: |
+              docker login -u $DOCKER_USER -p $DOCKER_PASS mydevreg.azurecr.io
+        - run:
+            command: |
+              docker push mydevreg.azurecr.io/hero-cicd:2.0
 
 
 
