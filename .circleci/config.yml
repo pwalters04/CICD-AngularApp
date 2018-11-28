@@ -42,18 +42,13 @@ jobs:
       # Terraform Build VM
 
       - run:
-          path:
-            - "/Terraform/Create_VM "
           command: |
             terraform init
       - run:
-          path:
-            - "/Terraform/Create_VM "
           command: |
             terraform plan
       - run:
-          path:
-            - "/Terraform/Create_VM "
+
           command: |
             terraform apply
 
